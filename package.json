@@ -1,0 +1,21 @@
+{
+  "name": "untitled3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "json": "^11.0.0",
+    "lodash": "^4.17.21",
+    "query-string": "^7.1.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "requests": "^0.3.0"
+  }
+}
