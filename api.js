@@ -1,7 +1,6 @@
 require('./config.js')
 const request = require('request');
 const querystring = require('query-string');
-
 // simple get request
 const getRequest = async (url) => {
     let result = new Promise((resolve, reject) => {
@@ -26,8 +25,6 @@ const getTeam = async (id = null, params = {}) => {
         //add modifiers
         let modifiers = querystring.stringify(params);
         if (modifiers.length > 0) url = `${url}?${modifiers}`
-        // console.log('url:', url)
-
 
         let body = await getRequest(url)
         return body

@@ -1,26 +1,35 @@
-require('./config.js');
+require('./config.js')
 const api = require('./api.js');
 const _ = require('lodash');
 const {createObjectCsvWriter} = require('csv-writer');
 const omitEmpty = require('omit-empty');
+const teamCsvHeader = [
+    {id: 'id', title: 'Team ID'},
+    {id: 'name', title: 'Team Name'},
+    {id: 'venueName', title: 'Team Venue Name'},
+    {id: 'games', title: 'Games Played'},
+    {id: 'wins', title: 'Wins'},
+    {id: 'losses', title: 'Losses'},
+    {id: 'points', title: 'Points'},
+    {id: 'goalsPerGame', title: 'Goals Per Game'},
+    {id: 'firstGameDate', title: 'Game Date of First Game of Season'},
+    {id: 'firstGameOpponent', title: 'Opponent Name in First Game of Season'},
+]
+
+const teamCsvPath = __dirname+'/csv/team.csv'
 
 const teamWriter = createObjectCsvWriter({
-    path: './csv/team.csv',
-    header: [
-        {id: 'id', title: 'Team ID'},
-        {id: 'name', title: 'Team Name'},
-        {id: 'venueName', title: 'Team Venue Name'},
-        {id: 'games', title: 'Games Played'},
-        {id: 'wins', title: 'Wins'},
-        {id: 'losses', title: 'Losses'},
-        {id: 'points', title: 'Points'},
-        {id: 'goalsPerGame', title: 'Goals Per Game'},
-        {id: 'firstGameDate', title: 'Game Date of First Game of Season'},
-        {id: 'firstGameOpponent', title: 'Opponent Name in First Game of Season'},
-    ]
+    path: teamCsvPath,
+    header: teamCsvHeader
 });
 
-const teamPipeline = async (id, season) => {
+const teamAppend = createObjectCsvWriter({
+    path: teamCsvPath,
+    header: teamCsvHeader,
+    append: true
+});
+
+const teamPipeline = async (id, season, append = false) => {
     if (!id) throw new Error('id not specified')
     if (!season) throw new Error('season not specified')
 
@@ -71,7 +80,10 @@ const teamPipeline = async (id, season) => {
         firstGameOpponent: opponentName,
     })
     const records = [teamPayload];
-    await teamWriter.writeRecords(records)
+
+    //write records to csv
+    if (append) await teamAppend.writeRecords(records)
+    else await teamWriter.writeRecords(records)
 
     return {
         team: responseTeam,
@@ -82,25 +94,35 @@ const teamPipeline = async (id, season) => {
 }
 module.exports.teamPipeline = teamPipeline;
 
+const playerCsvHeader = [
+    {id: 'id', title: 'Player ID'},
+    {id: 'name', title: 'Player Name'},
+    {id: 'currentTeam', title: 'Current Team'},
+    {id: 'age', title: 'Player Age'},
+    {id: 'number', title: 'Player Number'},
+    {id: 'position', title: 'Player Position'},
+    {id: 'rookie', title: 'If the player is a rookie'},
+    {id: 'assists', title: 'Assists'},
+    {id: 'goals', title: 'Goals'},
+    {id: 'games', title: 'Games'},
+    {id: 'hits', title: 'Hits'},
+    {id: 'points', title: 'Points'},
+]
+
+const playerCsvPath =  __dirname+'/csv/player.csv'
+
 const playerWriter = createObjectCsvWriter({
-    path: './csv/player.csv',
-    header: [
-        {id: 'id', title: 'Player ID'},
-        {id: 'name', title: 'Player Name'},
-        {id: 'currentTeam', title: 'Current Team'},
-        {id: 'age', title: 'Player Age'},
-        {id: 'number', title: 'Player Number'},
-        {id: 'position', title: 'Player Position'},
-        {id: 'rookie', title: 'If the player is a rookie'},
-        {id: 'assists', title: 'Assists'},
-        {id: 'goals', title: 'Goals'},
-        {id: 'games', title: 'Games'},
-        {id: 'hits', title: 'Hits'},
-        {id: 'points', title: 'Points'},
-    ]
+    path: playerCsvPath,
+    header: playerCsvHeader
 });
 
-const playerPipeline = async (id, season) => {
+const playerAppend = createObjectCsvWriter({
+    path: playerCsvPath,
+    header: playerCsvHeader,
+    append: true
+});
+
+const playerPipeline = async (id, season, append = false) => {
     if (!id) throw new Error('id not specified')
     if (!season) throw new Error('season not specified')
 
@@ -135,7 +157,10 @@ const playerPipeline = async (id, season) => {
         points: playerStat && playerStat.points,
     })
     const records = [playerPayload];
-    await playerWriter.writeRecords(records)
+
+    //write records to csv
+    if (append) await playerAppend.writeRecords(records)
+    else await playerWriter.writeRecords(records)
 
 
     return {

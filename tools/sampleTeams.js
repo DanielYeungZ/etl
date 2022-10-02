@@ -1,5 +1,5 @@
+require('dotenv').config({path: '../.env'});
 let pipeline=require('../pipeline.js')
-
 let api=require('../api.js');
 const run =async ()=>{
     const myArgs = process.argv.slice(2);
@@ -16,6 +16,7 @@ const run =async ()=>{
     //writing all teams to csv
     for(let team of teams){
         let id = team.id
+
         try {
             let {
                 team: teamPipe,
@@ -23,7 +24,9 @@ const run =async ()=>{
                 csvPayload: teamPayload,
             } = await pipeline.teamPipeline(id, season)
         } catch (e){
+
             console.log('id : ', id , "======> failed")
+            console.log(e)
         }
     }
 

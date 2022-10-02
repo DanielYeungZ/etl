@@ -1,5 +1,5 @@
+require('dotenv').config({path: '../.env'});
 let pipeline=require('../pipeline.js')
-
 let api=require('../api.js');
 const run =async ()=>{
     const myArgs = process.argv.slice(2);
@@ -31,6 +31,7 @@ const run =async ()=>{
             } = await pipeline.playerPipeline(id, season)
         } catch (e){
             console.log('id : ', id , "failed")
+            console.log(e)
         }
     }
 

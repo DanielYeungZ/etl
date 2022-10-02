@@ -72,7 +72,6 @@ describe('team pipeline: ', async () => {
                 let records = await pipeline.teamPipeline(idError, seasonError)
             } catch (e) {
                 expect(e).to.be.instanceOf(Error)
-                expect(e.message).to.eql('getTeam Error')
             }
         });
     });
@@ -164,7 +163,6 @@ describe('player pipeline: ', async () => {
                 let records = await pipeline.playerPipeline(idError, seasonError)
             } catch (e) {
                 expect(e).to.be.instanceOf(Error)
-                expect(e.message).to.eql('getPeople error')
             }
         });
     });
