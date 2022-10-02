@@ -10,9 +10,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "csv-writer": "^1.6.0",
     "dotenv": "^16.0.3",
     "json": "^11.0.0",
     "lodash": "^4.17.21",
+    "mocha": "^10.0.0",
+    "omit-empty": "^1.0.0",
     "query-string": "^7.1.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",

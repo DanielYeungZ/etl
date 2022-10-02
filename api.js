@@ -62,11 +62,30 @@ const getPeople = async (id = null) => {
 
     //query by team id
     if (id) url = `${url}/${id}`
+    // console.log('url: ', url)
 
     let body = await getRequest(url)
     return body
 }
 module.exports.getPeople = getPeople;
+
+const getPeopleStat = async (id = null, params = {}) => {
+    let url = process.env.PEOPLE_ENDPOINT
+
+    //query by team id
+    if (id) url = `${url}/${id}/stats`
+
+    //add modifiers
+    let modifiers = querystring.stringify(params);
+    if (modifiers.length > 0) url = `${url}?${modifiers}`
+    // console.log('url:', url)
+
+    let body = await getRequest(url)
+    return body
+}
+module.exports.getPeopleStat = getPeopleStat;
+
+
 
 const getPositions = async () => {
     let url = process.env.POSITIONS_ENDPOINT
@@ -91,3 +110,16 @@ const getStanding = async ( params = {}) => {
 module.exports.getStanding = getStanding;
 
 
+const getSchedule = async ( params = {}) => {
+    let url = process.env.SCHEDULE_ENDPOINT
+
+    //add modifiers
+    let modifiers = querystring.stringify(params);
+    if (modifiers.length > 0) url = `${url}?${modifiers}`
+    // console.log('url:', url)
+
+
+    let body = await getRequest(url)
+    return body
+}
+module.exports.getSchedule = getSchedule;
