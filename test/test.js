@@ -65,7 +65,6 @@ describe('team pipeline: ', async () => {
                 expect(e.message).to.eql('season not specified')
             }
         });
-
         it('team invalid error', async () => {
             try {
                 idError = -1
@@ -77,7 +76,6 @@ describe('team pipeline: ', async () => {
             }
         });
     });
-
 
 });
 
@@ -123,7 +121,6 @@ describe('player pipeline: ', async () => {
         });
     });
 
-
     const id3 = '8465005'
     const season3 = '20132014'
     describe(`Player ${id3}, Season ${season3}`, async () => {
@@ -140,7 +137,6 @@ describe('player pipeline: ', async () => {
         });
     });
 
-
     let idError;
     let seasonError;
     describe(`Player ${idError}, Season ${seasonError}`, async () => {
@@ -152,7 +148,6 @@ describe('player pipeline: ', async () => {
                 expect(e.message).to.eql('id not specified')
             }
         });
-
         it('player season error', async () => {
             try {
                 idError = 3
@@ -162,7 +157,6 @@ describe('player pipeline: ', async () => {
                 expect(e.message).to.eql('season not specified')
             }
         });
-
         it('player invalid error', async () => {
             try {
                 idError = -1
