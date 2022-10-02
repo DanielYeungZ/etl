@@ -24,58 +24,63 @@ const teamPipeline = async (id, season) => {
     if (!id) throw new Error('id not specified')
     if (!season) throw new Error('season not specified')
 
-    //get team data
+    //get team data params
     let paramsTeam = {
         season: season,
         expand: [
             'team.stats',
-            'team.schedule.previous',
-            'team.schedule.next',
         ]
     }
-    const response = await api.getTeam(id, paramsTeam)
-    const team = response.teams[0]
-    const teamStats = team.teamStats[0]
-    const stat = teamStats.splits[0].stat
 
-    //get team schedule
+    //get team schedule params
     let paramsSchedule = {
         season: season,
         teamId: id,
     }
-    const responseSchedule = await api.getSchedule(paramsSchedule);
+
+    let [responseTeam, responseSchedule] = await Promise.all([api.getTeam(id, paramsTeam), api.getSchedule(paramsSchedule)]);
+
+    // team & team stats data
+    const team = responseTeam.teams[0]
+    const teamStats = team.teamStats[0]
+    const stat = teamStats && teamStats.splits[0].stat
+
+    // first team game data
     const firstDate = responseSchedule && responseSchedule.dates[0]
     const firstGame = firstDate && firstDate.games[0]
-    const teams = firstGame.teams
+    const firstGameTeams = firstGame && firstGame.teams
 
     // find opponent name
-    const opponent = _.find(teams, (current) => {
+    const opponent = _.find(firstGameTeams, (current) => {
         if (current.team.name !== team.name) return true
     })
     const opponentName = opponent && opponent.team.name
 
 
-    // generate records for csv
-    const records = [
-        {
-            id: team.id,
-            name: team.name,
-            venueName: team.venue.name,
-            games: stat.gamesPlayed,
-            wins: stat.wins,
-            losses: stat.losses,
-            points: stat.pts,
-            goalsPerGame: stat.goalsPerGame,
-            firstGameDate: firstGame.gameDate,
-            firstGameOpponent: opponentName,
-        },
-    ];
-
-    // console.log(records)
+    // generate payload for csv
+    let teamPayload = omitEmpty({
+        id: team.id,
+        name: team.name,
+        venueName: team.venue.name,
+        games: stat.gamesPlayed,
+        wins: stat.wins,
+        losses: stat.losses,
+        points: stat.pts,
+        goalsPerGame: stat.goalsPerGame,
+        firstGameDate: firstGame.gameDate,
+        firstGameOpponent: opponentName,
+    })
+    const records = [teamPayload];
     await teamWriter.writeRecords(records)
-    return records
+
+    return {
+        team: responseTeam,
+        schedule: responseSchedule,
+        csvPayload: teamPayload,
+    }
+
 }
-module.exports.teamPipeline=teamPipeline;
+module.exports.teamPipeline = teamPipeline;
 
 const playerWriter = createObjectCsvWriter({
     path: './csv/player.csv',
@@ -99,41 +104,44 @@ const playerPipeline = async (id, season) => {
     if (!id) throw new Error('id not specified')
     if (!season) throw new Error('season not specified')
 
-    //get player data
-    const responsePlayer = await api.getPeople(id)
-    const player = responsePlayer.people[0]
-
-
-    // get player stats
+    // get player stats params
     let params = {
         season: season,
         stats: 'statsSingleSeason',
     }
-    const responseStats = await api.getPeopleStat(id, params)
+
+    let [responsePlayer, responseStats] = await Promise.all([api.getPeople(id), api.getPeopleStat(id, params)]);
+
+    // player data
+    const player = responsePlayer.people[0]
+
+    // player stats data
     const playerStats = responseStats.stats[0]
-    const playerStat = playerStats.splits[0].stat
+    const playerStat = playerStats && playerStats.splits[0] && playerStats.splits[0].stat
 
-
-    const records = [
-        {
-            id: player.id,
-            name: player.fullName,
-            currentTeam: player.currentTeam.name,
-            age: player.currentAge,
-            number: player.primaryNumber,
-            position: player.primaryPosition.name,
-            rookie: player.rookie,
-            assists: playerStat.assists,
-            goals: playerStat.goals,
-            games: playerStat.games,
-            hits: playerStat.hits,
-            points: playerStat.points,
-        },
-    ];
-
-    // console.log(records)
+    //generate player csv payload
+    let playerPayload = omitEmpty({
+        id: player.id,
+        name: player.fullName,
+        currentTeam: player.currentTeam && player.currentTeam.name,
+        age: player.currentAge,
+        number: player.primaryNumber,
+        position: player.primaryPosition && player.primaryPosition.name,
+        rookie: player.rookie,
+        assists: playerStat && playerStat.assists,
+        goals: playerStat && playerStat.goals,
+        games: playerStat && playerStat.games,
+        hits: playerStat && playerStat.hits,
+        points: playerStat && playerStat.points,
+    })
+    const records = [playerPayload];
     await playerWriter.writeRecords(records)
-    return records
-}
-module.exports.playerPipeline=playerPipeline;
 
+
+    return {
+        player: responsePlayer,
+        stats: responseStats,
+        csvPayload: playerPayload
+    }
+}
+module.exports.playerPipeline = playerPipeline;
