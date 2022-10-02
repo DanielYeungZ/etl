@@ -1,7 +1,7 @@
 {
-  "name": "untitled3",
+  "name": "etl",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "pipeline.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "mocha": "mocha",
